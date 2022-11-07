@@ -4,7 +4,7 @@ function validate () {
 
     if (userName == "admin" && password == "admin")
     {
-        window.location = "specialsmap.html"
+        window.location = "./pages/specialsmap.html"
         return false;
     }
     else
