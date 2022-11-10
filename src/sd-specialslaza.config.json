@@ -1,0 +1,13 @@
+{
+    "auth": {
+      "identityProviders": {
+        "google": {
+          "registration": {
+            "clientIdSettingName": "1027431687664-lmtglr56fndi1m5p3n9n37f7doiidho7.apps.googleusercontent.com",
+            "clientSecretSettingName": "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"
+          }
+        }
+      }
+    }
+  }
+  
