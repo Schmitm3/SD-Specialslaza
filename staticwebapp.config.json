@@ -8,6 +8,11 @@
           }
         }
       }
+    },
+    "globalHeaders": {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, OPTIONS",
+      "Cross-Origin-Opener-Policy": "same-origin-allow-popups"
     }
   }
   
