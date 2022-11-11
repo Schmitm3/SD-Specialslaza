@@ -28,73 +28,80 @@
 
     <div id="map"></div>
 
-    <script>    
+    <script>
+        var map;
+        var service;
+        var infowindow;
+        var infowindow;
+
         function initMap() {
-            // Map options
-            var options = {
-                zoom: 12,
-                center: {lat: 39.11207, lng: -84.50452}
+
+                var uc = new google.maps.LatLng(39.1329, -84.5150);
+
+                map = new google.maps.Map(document.getElementById("map"), {
+                    center: uc,
+                    zoom: 15
+                });
+
+                var request = {
+                    location: uc,
+                    radius: '1000',
+                    type: ['bar']
+                };
+
+                service = new google.maps.places.PlacesService(map);
+                infowindow = new google.maps.InfoWindow();
+
+                service.nearbySearch(request, callback);
+
             }
 
-            // New map
-            var map = new google.maps.Map(document.getElementById('map'), options);
-
-            /*
-            // Set marker
-            var marker = new google.maps.marker({
-                position: {lat: 39.13299, lng: -84.51557},
-                map: map
-            });
-            var infoWindow = new google.maps.InfoWindow({
-                content: '<h1> Cincinnati, OH</h1>'
-            });
-            marker.addListener('click', function(){
-                infoWindow.open(map, marker);
-            });
-            */
-
-        //Marker array
-        var markers = [
-            {
-                coords: {lat: 39.13299, lng: -84.51557},
-                content: '<h1>University of Cincinnati</h1>'
+            function callback(results, status) {
+                if (status == google.maps.places.PlacesServiceStatus.OK) {
+                    console.log("results.length=" + results.length);
+                    for (var i = 0; i < results.length; i++) {
+                        console.log("result:" + results[i].geometry.location);
+                        console.log("name= " + results[i].name);
+                        createMarker(results[i]);
+                    }
+                }
             }
-        ];
 
-        // Array loop
-        for (var i = 0; i < markers.length; i++){
-            setMarkers(markers[i]);
-        }
+            function createMarker(place) {
+                var marker = new google.maps.Marker({
+                    map: map,
+                    place_id: place.place_id,
+                    title: place.name,
+                    position: {lat:place.geometry.location.lat(),lng:place.geometry.location.lng()}
+                });
+                google.maps.event.addListener(marker, 'click', function(e) {
+                    //display place details in info window
+                    var request = {
+                        placeId: this.place_id,
+                        fields: ['name', 'formatted_address', 'rating', 'user_ratings_total', 'website']
+                    };
 
-        /*
-        setMarker({
-            coords: {lat: 39.13299, lng: -84.51557},
-            content: '<h1>Cincinnati</h1>'
-        });
-        */
 
-        function setMarker(props){
-            var marker = new google.maps.Marker({
-                position: props.coords,
-                map: map,
-            });
-
-            // Check content
-            if(props.content){
-                var infoWindow = new google.maps.InfoWindow({
-                content: props.content
-            });
-
-            marker.addListener('click', function(){
-                infoWindow.open(map, marker);
-            });
+                    var service = new google.maps.places.PlacesService(map);
+                    var that = this;
+                    service.getDetails(request, function(place, status) {
+                        if (status === google.maps.places.PlacesServiceStatus.OK) {
+                        infowindow.setContent("<div><strong>" + place.name + "</strong><br>" + "Address: " + place.formatted_address + "<br>" + "Average Rating: " + place.rating + "<br>" + "Reviews: " + place.user_ratings_total + "<br>" +  "<a href="+place.website+">Visit Website...</a>");
+                        infowindow.open(map, that);
+                        }
+                    });
+                });
+                /*google.maps.event.addListener(marker, 'click', function() {
+                    // display the place "name" and "place_id" in the infowindow.
+                    infowindow.setContent("<div><strong>" + place.name + "</strong><br>" + "Address: " + place.vicinity + "<br>" + "Average Rating: " + place.rating + "<br>" + "Reviews: " + place.user_ratings_total);
+                    infowindow.open(map, this);
+                });
+                return marker;*/
             }
-            }
-        }
+
     </script>
-    <script async defer 
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCduvatilwivADqfpA4nQUuOfxunp9afkc
-        &callback=initMap">
-        </script>
+    <script async
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBLGb9cR8k7vI5OfKr8-xs5nTxcC1mgKis&libraries=places&callback=initMap">
+    </script>
 </body>
 </html>
