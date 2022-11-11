@@ -78,7 +78,7 @@
                     //display place details in info window
                     var request = {
                         placeId: this.place_id,
-                        fields: ['name', 'formatted_address', 'rating', 'user_ratings_total', 'website']
+                        fields: ['name', 'formatted_address', 'rating', 'user_ratings_total', 'website', 'opening_hours']
                     };
 
 
@@ -86,7 +86,7 @@
                     var that = this;
                     service.getDetails(request, function(place, status) {
                         if (status === google.maps.places.PlacesServiceStatus.OK) {
-                        infowindow.setContent("<div><strong>" + place.name + "</strong><br>" + "Address: " + place.formatted_address + "<br>" + "Average Rating: " + place.rating + "<br>" + "Reviews: " + place.user_ratings_total + "<br>" +  "<a href="+place.website+">Visit Website...</a>");
+                        infowindow.setContent("<div><strong>" + place.name + "</strong><br>" + "Address: " + place.formatted_address + "<br>" + "Average Rating: " + place.rating + "<br>" + "Reviews: " + place.user_ratings_total + "<br>" +  "<a href="+place.website+">Visit Website...</a>" + "<br>" + place.opening_hours.weekday_text + "</div>");
                         infowindow.open(map, that);
                         }
                     });
