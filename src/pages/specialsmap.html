@@ -11,6 +11,144 @@
             height: 500px;
             width: 100%;
             margin: auto;
+            border-style: solid;
+            border-color: #18b0d6;
+        }
+        @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600&display=swap");
+        * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        }
+        img.special {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        }
+        html {
+        font-family: "Nunito";
+        font-size: 12px;
+        }
+
+        section {
+        min-height: 100vh;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 100px 0;
+        }
+        .container {
+        width: 100%;
+        height: 90%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        }
+        .brand {
+        text-align: center;
+        font-size: 4rem;
+        margin-bottom: 30px;
+        }
+        form {
+        width: 90%;
+        max-width: 400px;
+        margin: 20px auto;
+        background-color: rgb(223, 223, 223);
+        }
+        input {
+        width: 90%;
+        padding: 10px;
+        border-radius: 4px;
+        border: none;
+        outline: none;
+        font-size: 2rem;
+        background-color: rgb(223, 223, 223);
+        display: inline-block;
+        }
+        form ion-icon {
+        width: 8%;
+        font-size: 3rem;
+        margin-bottom: -8px;
+        color: rgb(75, 75, 75);
+        display: inline-block;
+        }
+        .search-result {
+        margin-top: 50px;
+        width: 100%;
+        display: grid;
+        grid-gap: 25px;
+        grid-template: auto / repeat(auto-fit, minmax(300px, 1fr));
+        }
+        .item {
+        width: 100%;
+        border-radius: 8px;
+        border-style: solid;
+        border-color: #18b0d6;
+        padding: 15px;
+        overflow: hidden;
+        }
+        .item img {
+        width: 100%;
+        height: 300px;
+        border-radius: 4px;
+        }
+        .flex-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        }
+        .search-result .title {
+        margin: 20px 10px 0 0;
+        font-size: 1.8rem;
+        font-weight: 400;
+        }
+        .view-btn {
+        text-decoration: none;
+        text-align: center;
+        width: 130px;
+        padding: 10px 0;
+        background-color: #18b0d6;
+        color: whitesmoke;
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-top: 20px;
+        border-radius: 4px;
+        align-self: flex-start;
+        }
+        .item-data {
+        color: whitesmoke;
+        display: block;
+        margin-top: 10px;
+        font-size: 1.4rem;
+        letter-spacing: 0.05rem;
+        line-height: 2rem;
+        }
+        .container.initial .brand {
+        font-size: 7rem;
+        }
+        .container.initial form {
+        max-width: 800px;
+        }
+        .container.initial form input {
+        padding: 20px;
+        font-size: 3rem;
+        }
+
+        @media (max-width: 768px) {
+        .search-result {
+            grid-gap: 10px;
+        }
+        .container.initial .brand {
+            font-size: 4rem;
+        }
+        .container.initial form {
+            max-width: 500px;
+        }
+        .container.initial form input {
+            padding: 10px;
+            font-size: 2rem;
+        }
         }
     </style>
 </head>
@@ -27,6 +165,17 @@
     </ul>
 
     <div id="map"></div>
+
+    <!--Section below added for List-->
+    <section>
+        <div class="container initial">
+          <h1 class="brand">Restaurant List</h1>
+          <div id ="searchdiv" class="search-result">
+          </div>
+        </div>
+      </section>
+      <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
+      <!--Section above added for List-->
 
     <script>
         var map;
@@ -53,7 +202,6 @@
                 infowindow = new google.maps.InfoWindow();
 
                 service.nearbySearch(request, callback);
-
             }
 
             function callback(results, status) {
@@ -63,6 +211,11 @@
                         console.log("result:" + results[i].geometry.location);
                         console.log("name= " + results[i].name);
                         createMarker(results[i]);
+                        (function (i) {
+                            setTimeout(function () {
+                            generateHTML(results[i])
+                            }, i < 8 ? 0 : 500 * i);
+                        })(i);
                     }
                 }
             }
@@ -80,23 +233,54 @@
                         placeId: this.place_id,
                         fields: ['name', 'formatted_address', 'rating', 'user_ratings_total', 'website', 'opening_hours']
                     };
-
-
                     var service = new google.maps.places.PlacesService(map);
                     var that = this;
                     service.getDetails(request, function(place, status) {
-                        if (status === google.maps.places.PlacesServiceStatus.OK) {
+                        if (status == google.maps.places.PlacesServiceStatus.OK) {
                         infowindow.setContent("<div><strong>" + place.name + "</strong><br>" + "Address: " + place.formatted_address + "<br>" + "Average Rating: " + place.rating + "<br>" + "Reviews: " + place.user_ratings_total + "<br>" +  "<a href="+place.website+">Visit Website...</a>" + "<br>" + place.opening_hours.weekday_text + "</div>");
                         infowindow.open(map, that);
                         }
                     });
                 });
-                /*google.maps.event.addListener(marker, 'click', function() {
-                    // display the place "name" and "place_id" in the infowindow.
-                    infowindow.setContent("<div><strong>" + place.name + "</strong><br>" + "Address: " + place.vicinity + "<br>" + "Average Rating: " + place.rating + "<br>" + "Reviews: " + place.user_ratings_total);
-                    infowindow.open(map, this);
-                });
-                return marker;*/
+            }
+
+            //Added for List
+
+            function generateHTML(place) {
+                    var request = {
+                        placeId: place.place_id,
+                        fields: ['name', 'website', 'photos.photo_reference']
+                    };
+                    var service = new google.maps.places.PlacesService(map);
+                    console.log("Before GetDetails")
+                    service.getDetails(request, function(place, status) {
+                        console.log("Outside if statement")
+                        if (status == google.maps.places.PlacesServiceStatus.OK) {
+                            var firstPhoto = place.photos[0].photo_reference;
+                            var newItemDiv = document.createElement("div");
+                            newItemDiv.className = "item";
+                            var img = document.createElement("img");
+                            img.className = "special";
+                            img.src = place.photos[0].getUrl({'maxWidth': 500, 'maxHeight': 500});
+                            newItemDiv.appendChild(img);
+                            var newFlexDiv = document.createElement("div");
+                            newFlexDiv.className = "flex-container";
+                            var h1 = document.createElement("h1");
+                            h1.className = "title";
+                            var t = document.createTextNode(place.name);
+                            h1.appendChild(t);
+                            var aTag = document.createElement('a');
+                            aTag.className = "view-btn";
+                            aTag.setAttribute('href',place.website);
+                            aTag.innerText = "View Website";
+                            newFlexDiv.appendChild(h1);
+                            newFlexDiv.appendChild(aTag);
+                            newItemDiv.appendChild(newFlexDiv);
+                            var searchDiv = document.getElementById("searchdiv")
+                            searchDiv.appendChild(newItemDiv);
+
+                        }
+                    })
             }
 
     </script>
