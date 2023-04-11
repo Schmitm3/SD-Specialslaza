@@ -157,134 +157,67 @@
         <img src="../images/logo.png" alt="Logo" class="logo">
     </div>
     <ul class="navbar">
-        <li class="navbar"><a class="active" href="./specialsmap.html">Restaurants List</a></li>
+        <li class="navbar"><a href="./specialsmap.html">Restaurants List</a></li>
         <li class="navbar"><a class="active" href="./specialsnear.html">Specials Near You</a></li>
         <li class="navbar"><a href="./about.html">About</a></li>
         <li class="navbar" style="float:right"><a href="/.auth/logout?post_logout_redirect_uri=https://thankful-field-06f10f710.2.azurestaticapps.net/index.html">Log Out</a></li>
     </ul>
-
-    <div id="map"></div>
-
-    <!--Section below added for List-->
     <section>
         <div class="container initial">
-          <h1 class="brand">Restaurant List</h1>
+          <h1 class="brand">Wrk In Progress...</h1>
           <div id ="searchdiv" class="search-result">
           </div>
         </div>
-      </section>
-      <script src="https://unpkg.com/ionicons@5.1.2/dist/ionicons.js"></script>
-      <!--Section above added for List-->
-
-    <script>
-        var map;
-        var service;
-        var infowindow;
-        var infowindow;
-
-        function initMap() {
-
-                var uc = new google.maps.LatLng(39.1329, -84.5150);
-
-                map = new google.maps.Map(document.getElementById("map"), {
-                    center: uc,
-                    zoom: 15
-                });
-
-                var request = {
-                    location: uc,
-                    radius: '1000',
-                    type: ['bar']
-                };
-
-                service = new google.maps.places.PlacesService(map);
-                infowindow = new google.maps.InfoWindow();
-
-                service.nearbySearch(request, callback);
+    </section>
+    <script type = "importmap">
+        {
+            "imports": {
+                "@azure/storage-blob": ""
             }
-
-            function callback(results, status) {
-                if (status == google.maps.places.PlacesServiceStatus.OK) {
-                    console.log("results.length=" + results.length);
-                    for (var i = 0; i < results.length; i++) {
-                        console.log("result:" + results[i].geometry.location);
-                        console.log("name= " + results[i].name);
-                        createMarker(results[i]);
-                        (function (i) {
-                            setTimeout(function () {
-                            generateHTML(results[i])
-                            }, i < 8 ? 0 : 500 * i);
-                        })(i);
-                    }
-                }
-            }
-
-            function createMarker(place) {
-                var marker = new google.maps.Marker({
-                    map: map,
-                    place_id: place.place_id,
-                    title: place.name,
-                    position: {lat:place.geometry.location.lat(),lng:place.geometry.location.lng()}
-                });
-                google.maps.event.addListener(marker, 'click', function(e) {
-                    //display place details in info window
-                    var request = {
-                        placeId: this.place_id,
-                        fields: ['name', 'formatted_address', 'rating', 'user_ratings_total', 'website', 'opening_hours']
-                    };
-                    var service = new google.maps.places.PlacesService(map);
-                    var that = this;
-                    service.getDetails(request, function(place, status) {
-                        if (status == google.maps.places.PlacesServiceStatus.OK) {
-                        infowindow.setContent("<div><strong>" + place.name + "</strong><br>" + "Address: " + place.formatted_address + "<br>" + "Average Rating: " + place.rating + "<br>" + "Reviews: " + place.user_ratings_total + "<br>" +  "<a href="+place.website+">Visit Website...</a>" + "<br>" + place.opening_hours.weekday_text + "</div>");
-                        infowindow.open(map, that);
-                        }
-                    });
-                });
-            }
-
-            //Added for List
-
-            function generateHTML(place) {
-                    var request = {
-                        placeId: place.place_id,
-                        fields: ['name', 'website', 'photos.photo_reference']
-                    };
-                    var service = new google.maps.places.PlacesService(map);
-                    console.log("Before GetDetails")
-                    service.getDetails(request, function(place, status) {
-                        console.log("Outside if statement")
-                        if (status == google.maps.places.PlacesServiceStatus.OK) {
-                            var firstPhoto = place.photos[0].photo_reference;
-                            var newItemDiv = document.createElement("div");
-                            newItemDiv.className = "item";
-                            var img = document.createElement("img");
-                            img.className = "special";
-                            img.src = place.photos[0].getUrl({'maxWidth': 500, 'maxHeight': 500});
-                            newItemDiv.appendChild(img);
-                            var newFlexDiv = document.createElement("div");
-                            newFlexDiv.className = "flex-container";
-                            var h1 = document.createElement("h1");
-                            h1.className = "title";
-                            var t = document.createTextNode(place.name);
-                            h1.appendChild(t);
-                            var aTag = document.createElement('a');
-                            aTag.className = "view-btn";
-                            aTag.setAttribute('href',place.website);
-                            aTag.innerText = "View Website";
-                            newFlexDiv.appendChild(h1);
-                            newFlexDiv.appendChild(aTag);
-                            newItemDiv.appendChild(newFlexDiv);
-                            var searchDiv = document.getElementById("searchdiv")
-                            searchDiv.appendChild(newItemDiv);
-
-                        }
-                    })
-            }
-
+        }
     </script>
-    <script async
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBLGb9cR8k7vI5OfKr8-xs5nTxcC1mgKis&libraries=places&callback=initMap">
+    <script type = "module">
+        import { BlobServiceClient } from '@azure/storage-blob';
+        // connect-with-sas-token.js
+        require('dotenv').config()
+
+        const accountName = process.env.specialsstoreageaccount;
+        const sasToken = process.env.sp= + 'acw&st=2023-04-11T12:16:37Z&se=2023-04-25T20:16:37Z&spr=https&sv=2021-12-02&sr=c&sig=E9YExqtQcnCOo%2ByZ5sj29dmtMo55f7zdnJWzIsJJFqU%3D';
+        if (!accountName) throw Error('Azure Storage accountName not found');
+        if (!sasToken) throw Error('Azure Storage accountKey not found');
+
+        const blobServiceUri = `https://${accountName}.blob.core.windows.net`;
+
+        // https://YOUR-RESOURCE-NAME.blob.core.windows.net?YOUR-SAS-TOKEN
+        const blobServiceClient = new BlobServiceClient(
+        `${blobServiceUri}?${sasToken}`,
+        null
+        );
+
+        async function main(){
+        
+        const containerName = 'scrapedfiles';
+        const blobName = 'Upload';
+
+        const timestamp = Date.now();
+        const fileName = `my-new-file-${timestamp}.txt`;
+
+        // create container client
+        const containerClient = await blobServiceClient.getContainerClient(containerName);
+
+        // create blob client
+        const blobClient = await containerClient.getBlockBlobClient(blobName);
+
+        // download file
+        await blobClient.downloadToFile(fileName);
+
+        console.log(`${fileName} downloaded`);
+        
+        }
+
+        main()
+        .then(() => console.log(`done`))
+        .catch((ex) => console.log(`error: ${ex.message}`));
     </script>
 </body>
 </html>
