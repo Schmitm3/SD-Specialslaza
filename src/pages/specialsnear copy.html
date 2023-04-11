@@ -151,6 +151,7 @@
         }
         }
     </style>
+    <script src="https://azuresdkdocs.blob.core.windows.net/$web/azure-storage-blob/12.10.0/azure-storage-blob.js"></script>
 </head>
 <body> 
     <div class="imgcontainer" background-color="#">
@@ -158,66 +159,45 @@
     </div>
     <ul class="navbar">
         <li class="navbar"><a href="./specialsmap.html">Restaurants List</a></li>
-        <li class="navbar"><a class="active" href="./specialsnear copy.html">Specials Near You</a></li>
+        <li class="navbar"><a class="active" href="./specialsnear copy.html.html">Specials Near You</a></li>
         <li class="navbar"><a href="./about.html">About</a></li>
         <li class="navbar" style="float:right"><a href="/.auth/logout?post_logout_redirect_uri=https://thankful-field-06f10f710.2.azurestaticapps.net/index.html">Log Out</a></li>
     </ul>
     <section>
         <div class="container initial">
           <h1 class="brand">Work In Progress...</h1>
-          <div id ="searchdiv" class="search-result">
-          </div>
-        </div>
+          <h1 class = "brand">Azure Blob Storage Example</h1>
+          <button class = "brand" onclick="fetchBlobData()">Fetch Blob Data</button>
+    </div>
     </section>
-    <script type = "importmap">
-        {
-            "imports": {
-                "@azure/storage-blob": ""
-            }
+    <script>
+        // Fetch Blob Data
+        function fetchBlobData() {
+            // Update with your storage account name, container name, and blob name
+            var accountName = 'specialsstoreageaccount ';
+            var containerName = 'scrapedfiles';
+            var blobName = 'Upload';
+
+            // Update with your connection string
+            var connectionString = 'DefaultEndpointsProtocol=https;AccountName=specialsstoreageaccount;AccountKey=MHJrEIZFNUlO9HoL10bamyedLHPGvOGwdiqf9SL98WeqPOm4SXJKugwjJTJte8JYl9OcBg7B9P0++AStsF4KrQ==;EndpointSuffix=core.windows.net';
+
+            // Create a BlobServiceClient object using the connection string
+            var blobServiceClient = new Azure.Storage.Blob.BlobServiceClient(connectionString);
+
+            // Get a reference to the container
+            var containerClient = blobServiceClient.getContainerClient(containerName);
+
+            // Get a reference to the blob
+            var blobClient = containerClient.getBlobClient(blobName);
+
+            // Download the blob content as a string
+            blobClient.downloadToText().then(function (response) {
+                console.log('Blob content:', response);
+                // Do something with the blob data
+            }).catch(function (error) {
+                console.error(error);
+            });
         }
-    </script>
-    <script type = "module">
-        import { BlobServiceClient } from '@azure/storage-blob';
-        // connect-with-sas-token.js
-        require('dotenv').config()
-
-        const accountName = process.env.specialsstoreageaccount;
-        const sasToken = process.env.sp= + 'acw&st=2023-04-11T12:16:37Z&se=2023-04-25T20:16:37Z&spr=https&sv=2021-12-02&sr=c&sig=E9YExqtQcnCOo%2ByZ5sj29dmtMo55f7zdnJWzIsJJFqU%3D';
-        if (!accountName) throw Error('Azure Storage accountName not found');
-        if (!sasToken) throw Error('Azure Storage accountKey not found');
-
-        const blobServiceUri = `https://${accountName}.blob.core.windows.net`;
-
-        // https://YOUR-RESOURCE-NAME.blob.core.windows.net?YOUR-SAS-TOKEN
-        const blobServiceClient = new BlobServiceClient(
-        `${blobServiceUri}?${sasToken}`,
-        null
-        );
-
-        async function main(){
-        
-        const containerName = 'scrapedfiles';
-        const blobName = 'Upload';
-
-        const timestamp = Date.now();
-        const fileName = `my-new-file-${timestamp}.txt`;
-
-        // create container client
-        const containerClient = await blobServiceClient.getContainerClient(containerName);
-
-        // create blob client
-        const blobClient = await containerClient.getBlockBlobClient(blobName);
-
-        // download file
-        await blobClient.downloadToFile(fileName);
-
-        console.log(`${fileName} downloaded`);
-        
-        }
-
-        main()
-        .then(() => console.log(`done`))
-        .catch((ex) => console.log(`error: ${ex.message}`));
     </script>
 </body>
 </html>
